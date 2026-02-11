@@ -8,9 +8,9 @@ const typeLabels: Record<string, string> = {
 };
 
 const typeColors: Record<string, string> = {
-  satellite: '#00F0FF',
-  debris: '#FF6B3B',
-  station: '#FFFFFF',
+  satellite: '#8ec8d4',
+  debris: '#c4826a',
+  station: '#d4cfc2',
 };
 
 function DataRow({ label, value }: { label: string; value: string }) {
@@ -30,11 +30,11 @@ export default function DataCard() {
       {selected && (
         <motion.div
           className="data-card"
-          initial={{ opacity: 0, y: 20, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.96 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          style={{ borderColor: typeColors[selected.type] + '33' }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ borderColor: typeColors[selected.type] + '20' }}
         >
           {/* Header */}
           <div className="data-card-header">
@@ -55,7 +55,7 @@ export default function DataCard() {
           <div
             className="data-card-divider"
             style={{
-              background: `linear-gradient(90deg, ${typeColors[selected.type]}33, transparent)`,
+              background: `linear-gradient(90deg, ${typeColors[selected.type]}18, transparent)`,
             }}
           />
 

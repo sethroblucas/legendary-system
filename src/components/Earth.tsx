@@ -1,202 +1,296 @@
 import { useRef, useMemo } from 'react';
-import { useFrame, useLoader } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { TextureLoader } from 'three';
 
-// Earth textures from public CDN (NASA Blue Marble)
-const TEXTURE_BASE = 'https://unpkg.com/three-globe@2.35.0/example/img';
-
-function AtmosphereGlow() {
-  const atmosphereMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec3 vNormal;
-        varying vec3 vPosition;
-        void main() {
-          vNormal = normalize(normalMatrix * normal);
-          vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vNormal;
-        varying vec3 vPosition;
-        void main() {
-          float intensity = pow(0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
-          gl_FragColor = vec4(0.0, 0.94, 1.0, 1.0) * intensity * 0.4;
-        }
-      `,
-      blending: THREE.AdditiveBlending,
-      side: THREE.BackSide,
-      transparent: true,
-      depthWrite: false,
-    });
-  }, []);
-
+// --- Layer 1: Dark Core Sphere ---
+function CoreSphere() {
   return (
-    <mesh scale={[1.12, 1.12, 1.12]}>
-      <sphereGeometry args={[1, 64, 64]} />
-      <primitive object={atmosphereMaterial} attach="material" />
+    <mesh>
+      <sphereGeometry args={[0.98, 96, 96]} />
+      <meshBasicMaterial color="#08090c" />
     </mesh>
   );
 }
 
-function GridOverlay() {
-  const gridMaterial = useMemo(() => {
+// --- Layer 2: Holographic Grid Shell ---
+function HoloGrid() {
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+  const material = useMemo(() => {
     return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+      },
       vertexShader: `
         varying vec3 vPosition;
         varying vec3 vNormal;
+        varying vec3 vViewDir;
         void main() {
           vPosition = position;
           vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewDir = normalize(-mvPos.xyz);
+          gl_Position = projectionMatrix * mvPos;
         }
       `,
       fragmentShader: `
+        uniform float uTime;
         varying vec3 vPosition;
         varying vec3 vNormal;
+        varying vec3 vViewDir;
 
         void main() {
-          // Convert position to spherical coords
-          float lat = asin(vPosition.y);
+          // Spherical coords
+          float lat = asin(clamp(vPosition.y, -1.0, 1.0));
           float lon = atan(vPosition.z, vPosition.x);
 
-          // Grid lines every 15 degrees
-          float gridLat = abs(fract(lat * 180.0 / 3.14159 / 15.0 + 0.5) - 0.5);
-          float gridLon = abs(fract(lon * 180.0 / 3.14159 / 15.0 + 0.5) - 0.5);
+          // Grid lines — 15 degree spacing
+          float gridLat = abs(fract(lat * 180.0 / 3.14159265 / 15.0 + 0.5) - 0.5);
+          float gridLon = abs(fract(lon * 180.0 / 3.14159265 / 15.0 + 0.5) - 0.5);
 
-          float lineWidth = 0.02;
+          float lineWidth = 0.018;
           float latLine = 1.0 - smoothstep(0.0, lineWidth, gridLat);
           float lonLine = 1.0 - smoothstep(0.0, lineWidth, gridLon);
-
           float grid = max(latLine, lonLine);
 
-          // Fresnel edge fade
-          float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 1.5);
+          // Equator + prime meridian emphasis
+          float eqLine = 1.0 - smoothstep(0.0, 0.008, abs(lat));
+          float pmLine = 1.0 - smoothstep(0.0, 0.008, abs(lon));
+          grid = max(grid, max(eqLine * 0.6, pmLine * 0.6));
 
-          float alpha = grid * 0.08 * (0.3 + fresnel * 0.7);
+          // Fresnel for edge glow
+          float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 2.5);
 
-          gl_FragColor = vec4(0.0, 0.94, 1.0, alpha);
+          // Subtle continental hint via noise approximation
+          float n1 = sin(vPosition.x * 8.0 + vPosition.y * 6.0) * cos(vPosition.z * 7.0 + vPosition.x * 4.0);
+          float n2 = sin(vPosition.y * 12.0 + vPosition.z * 9.0) * cos(vPosition.x * 11.0);
+          float landMask = smoothstep(0.1, 0.45, (n1 + n2) * 0.5 + 0.5);
+
+          // Desaturated cyan-white base
+          vec3 gridColor = vec3(0.65, 0.82, 0.88);
+          // Warm amber tint for land regions
+          vec3 landColor = vec3(0.78, 0.68, 0.52);
+
+          vec3 baseColor = mix(gridColor, landColor, landMask * 0.15);
+
+          // Grid luminosity
+          float gridAlpha = grid * 0.22 * (0.4 + fresnel * 0.6);
+
+          // Faint surface fill for land regions
+          float surfaceAlpha = landMask * 0.035 * (0.5 + fresnel * 0.5);
+
+          // Fresnel edge glow
+          float edgeAlpha = fresnel * 0.12;
+
+          float totalAlpha = gridAlpha + surfaceAlpha + edgeAlpha;
+
+          gl_FragColor = vec4(baseColor, totalAlpha);
         }
       `,
       transparent: true,
       depthWrite: false,
       side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
     });
   }, []);
 
-  return (
-    <mesh scale={[1.003, 1.003, 1.003]}>
-      <sphereGeometry args={[1, 128, 128]} />
-      <primitive object={gridMaterial} attach="material" />
-    </mesh>
-  );
-}
-
-export default function Earth() {
-  const earthRef = useRef<THREE.Mesh>(null);
-  const cloudsRef = useRef<THREE.Mesh>(null);
-
-  const [dayMap, nightMap, cloudsMap, bumpMap] = useLoader(TextureLoader, [
-    `${TEXTURE_BASE}/earth-blue-marble.jpg`,
-    `${TEXTURE_BASE}/earth-night.jpg`,
-    `${TEXTURE_BASE}/earth-water.png`,
-    `${TEXTURE_BASE}/earth-topology.png`,
-  ]);
-
-  const earthMaterial = useMemo(() => {
-    return new THREE.ShaderMaterial({
-      uniforms: {
-        dayTexture: { value: dayMap },
-        nightTexture: { value: nightMap },
-        bumpTexture: { value: bumpMap },
-        sunDirection: { value: new THREE.Vector3(5, 3, 5).normalize() },
-      },
-      vertexShader: `
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vWorldPosition;
-        void main() {
-          vUv = uv;
-          vNormal = normalize(normalMatrix * normal);
-          vWorldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-      `,
-      fragmentShader: `
-        uniform sampler2D dayTexture;
-        uniform sampler2D nightTexture;
-        uniform sampler2D bumpTexture;
-        uniform vec3 sunDirection;
-
-        varying vec2 vUv;
-        varying vec3 vNormal;
-        varying vec3 vWorldPosition;
-
-        void main() {
-          vec3 normal = normalize(vNormal);
-          float NdotL = dot(normal, sunDirection);
-
-          // Day/night blend with smooth transition
-          float dayMix = smoothstep(-0.15, 0.25, NdotL);
-
-          vec4 dayColor = texture2D(dayTexture, vUv);
-          vec4 nightColor = texture2D(nightTexture, vUv);
-
-          // Dim the day side slightly for tactical feel
-          dayColor.rgb *= 0.85;
-
-          // Boost night lights with cyan tint
-          nightColor.rgb *= 1.4;
-          nightColor.rgb = mix(nightColor.rgb, nightColor.rgb * vec3(0.8, 1.0, 1.0), 0.3);
-
-          vec4 color = mix(nightColor, dayColor, dayMix);
-
-          // Subtle ambient
-          color.rgb += vec3(0.01, 0.015, 0.02);
-
-          gl_FragColor = color;
-        }
-      `,
-    });
-  }, [dayMap, nightMap, bumpMap]);
-
-  // Slow Earth rotation
   useFrame((_, delta) => {
-    if (earthRef.current) {
-      earthRef.current.rotation.y += delta * 0.01;
-    }
-    if (cloudsRef.current) {
-      cloudsRef.current.rotation.y += delta * 0.015;
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value += delta;
     }
   });
 
   return (
-    <group>
-      {/* Earth */}
-      <mesh ref={earthRef}>
-        <sphereGeometry args={[1, 128, 128]} />
-        <primitive object={earthMaterial} attach="material" />
-      </mesh>
+    <mesh scale={[1.002, 1.002, 1.002]}>
+      <sphereGeometry args={[1, 128, 128]} />
+      <primitive object={material} ref={materialRef} attach="material" />
+    </mesh>
+  );
+}
 
-      {/* Clouds */}
-      <mesh ref={cloudsRef} scale={[1.005, 1.005, 1.005]}>
-        <sphereGeometry args={[1, 64, 64]} />
-        <meshStandardMaterial
-          map={cloudsMap}
-          transparent
-          opacity={0.15}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
+// --- Layer 3: Atmospheric Projection Shell ---
+function AtmosphereShell() {
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewDir = normalize(-mvPos.xyz);
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+          float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 3.5);
+          // Desaturated cyan-white atmospheric rim
+          vec3 color = vec3(0.6, 0.78, 0.85);
+          float alpha = fresnel * 0.18;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
 
-      {/* Grid */}
-      <GridOverlay />
+  return (
+    <mesh scale={[1.04, 1.04, 1.04]}>
+      <sphereGeometry args={[1, 64, 64]} />
+      <primitive object={material} attach="material" />
+    </mesh>
+  );
+}
 
-      {/* Atmosphere */}
-      <AtmosphereGlow />
+// --- Layer 4: Outer Glow Haze ---
+function OuterGlow() {
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewDir = normalize(-mvPos.xyz);
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+          float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 4.0);
+          vec3 color = vec3(0.55, 0.7, 0.76);
+          float alpha = fresnel * 0.08;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
+
+  return (
+    <mesh scale={[1.15, 1.15, 1.15]}>
+      <sphereGeometry args={[1, 48, 48]} />
+      <primitive object={material} attach="material" />
+    </mesh>
+  );
+}
+
+// --- Layer 5: Rotating Volumetric Noise Field ---
+function NoiseField() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const materialRef = useRef<THREE.ShaderMaterial>(null);
+
+  const material = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+      },
+      vertexShader: `
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+        void main() {
+          vPosition = position;
+          vNormal = normalize(normalMatrix * normal);
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vViewDir = normalize(-mvPos.xyz);
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        varying vec3 vPosition;
+        varying vec3 vNormal;
+        varying vec3 vViewDir;
+
+        // Simple 3D hash
+        float hash(vec3 p) {
+          p = fract(p * vec3(443.897, 441.423, 437.195));
+          p += dot(p, p.yzx + 19.19);
+          return fract((p.x + p.y) * p.z);
+        }
+
+        float noise(vec3 p) {
+          vec3 i = floor(p);
+          vec3 f = fract(p);
+          f = f * f * (3.0 - 2.0 * f);
+
+          return mix(
+            mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x),
+                mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+            mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+                mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y),
+            f.z
+          );
+        }
+
+        void main() {
+          float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 2.0);
+
+          vec3 noiseCoord = vPosition * 4.0 + vec3(uTime * 0.02, uTime * 0.015, uTime * 0.01);
+          float n = noise(noiseCoord) * 0.6 + noise(noiseCoord * 2.0) * 0.3;
+
+          vec3 color = vec3(0.6, 0.72, 0.78);
+          float alpha = n * fresnel * 0.06;
+
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+    });
+  }, []);
+
+  useFrame((_, delta) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value += delta;
+    }
+    if (meshRef.current) {
+      meshRef.current.rotation.y += delta * 0.008;
+      meshRef.current.rotation.x += delta * 0.003;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} scale={[1.06, 1.06, 1.06]}>
+      <sphereGeometry args={[1, 64, 64]} />
+      <primitive object={material} ref={materialRef} attach="material" />
+    </mesh>
+  );
+}
+
+// --- Main Earth Hologram ---
+export default function Earth() {
+  const groupRef = useRef<THREE.Group>(null);
+
+  // Very slow idle drift
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.006;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <CoreSphere />
+      <HoloGrid />
+      <AtmosphereShell />
+      <NoiseField />
+      <OuterGlow />
     </group>
   );
 }

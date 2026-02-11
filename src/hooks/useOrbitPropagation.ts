@@ -13,9 +13,10 @@ export interface SatellitePositions {
   satelliteMap: Map<number, number>; // noradId -> index
 }
 
-const COLOR_SATELLITE = new THREE.Color('#00F0FF');
-const COLOR_DEBRIS = new THREE.Color('#FF6B3B');
-const COLOR_STATION = new THREE.Color('#FFFFFF');
+// Dune holographic palette — desaturated, luminous
+const COLOR_SATELLITE = new THREE.Color('#8ec8d4');
+const COLOR_DEBRIS = new THREE.Color('#c4826a');
+const COLOR_STATION = new THREE.Color('#d4cfc2');
 
 export function useOrbitPropagation(): React.MutableRefObject<SatellitePositions> {
   const positionsRef = useRef<SatellitePositions>({
