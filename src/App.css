@@ -1,0 +1,360 @@
+/* ============================================
+   ORBital — Design System
+   ============================================ */
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #05070A;
+}
+
+/* ---- Scene ---- */
+.scene-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ---- HUD Overlay ---- */
+.hud-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  padding: 28px 32px;
+}
+
+/* ---- HUD Top Left ---- */
+.hud-top-left {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+}
+
+.hud-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.hud-title-orb {
+  color: #00F0FF;
+}
+
+.hud-title-ital {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 300;
+}
+
+.hud-subtitle {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 20px;
+}
+
+.hud-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.hud-stat.total {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hud-stat-dot.sat {
+  background: #00F0FF;
+  box-shadow: 0 0 6px #00F0FF66;
+}
+
+.hud-stat-dot.debris {
+  background: #FF6B3B;
+  box-shadow: 0 0 6px #FF6B3B66;
+}
+
+.hud-stat-dot.station {
+  background: #FFFFFF;
+  box-shadow: 0 0 6px #FFFFFF66;
+}
+
+.hud-stat-label {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  text-transform: uppercase;
+  min-width: 80px;
+}
+
+.hud-stat-value {
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-stat-value.loading {
+  color: #00F0FF;
+  animation: pulse-text 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-text {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ---- HUD Bottom Left ---- */
+.hud-bottom-left {
+  position: absolute;
+  bottom: 28px;
+  left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-sys-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.hud-sys-label {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+  text-transform: uppercase;
+  min-width: 90px;
+}
+
+.hud-sys-value {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 400;
+}
+
+.hud-sys-value.mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+/* ---- HUD Top Right ---- */
+.hud-top-right {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+}
+
+.hud-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.hud-status-dot.active {
+  background: #00FF88;
+  box-shadow: 0 0 8px #00FF8866;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.6; box-shadow: 0 0 4px #00FF8844; }
+  50% { opacity: 1; box-shadow: 0 0 10px #00FF8888; }
+}
+
+.hud-status-text {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---- Corner Brackets ---- */
+.hud-bracket {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.hud-bracket.top-left {
+  top: 16px;
+  left: 16px;
+  border-top: 1px solid rgba(0, 240, 255, 0.15);
+  border-left: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.hud-bracket.top-right {
+  top: 16px;
+  right: 16px;
+  border-top: 1px solid rgba(0, 240, 255, 0.15);
+  border-right: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.hud-bracket.bottom-left {
+  bottom: 16px;
+  left: 16px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  border-left: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.hud-bracket.bottom-right {
+  bottom: 16px;
+  right: 16px;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+  border-right: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+/* ---- Data Card ---- */
+.data-card-container {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.data-card {
+  width: 280px;
+  background: rgba(10, 15, 25, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: 8px;
+  padding: 18px 20px;
+  pointer-events: auto;
+  box-shadow:
+    0 0 40px rgba(0, 0, 0, 0.4),
+    0 0 1px rgba(0, 240, 255, 0.1) inset;
+}
+
+.data-card-header {
+  margin-bottom: 12px;
+}
+
+.data-card-type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.type-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.data-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.data-card-divider {
+  height: 1px;
+  margin-bottom: 12px;
+}
+
+.data-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.data-label {
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.data-value {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.data-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.data-card-footer-text {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(0, 240, 255, 0.5);
+}
+
+.data-card-footer-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #00F0FF;
+  animation: pulse-dot-cyan 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot-cyan {
+  0%, 100% { opacity: 0.4; box-shadow: 0 0 3px #00F0FF44; }
+  50% { opacity: 1; box-shadow: 0 0 8px #00F0FF88; }
+}
+
+/* ---- Scrollbar (hidden) ---- */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---- Selection ---- */
+::selection {
+  background: rgba(0, 240, 255, 0.2);
+  color: #fff;
+}
