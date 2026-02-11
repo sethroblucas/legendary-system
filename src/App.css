@@ -1,13 +1,13 @@
 /* ============================================
-   ORBital — Dune Holographic Design System
+   AETHON — Planetary Intelligence Construct
    ============================================
    Color philosophy:
-   - Primary glow: desaturated cyan-white (#8ec8d4)
-   - Warm accent: pale amber (#c4a86a)
-   - Danger/debris: muted terracotta (#c4826a)
-   - Station: warm bone (#d4cfc2)
-   - Background: deep charcoal (#0a0b0f)
-   - Text: soft grey-blue, never pure white
+   - Primary glow: desaturated cyan (#7ab3be)
+   - Warm accent: pale amber (#b09a6a)
+   - Unregistered: muted terracotta (#b0766a)
+   - Station: warm bone (#c4bfb2)
+   - Background: deep void (#08090d)
+   - Text: muted grey-blue, never pure white
    ============================================ */
 
 .app {
@@ -15,7 +15,7 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #0a0b0f;
+  background: #08090d;
 }
 
 /* ---- Scene ---- */
@@ -42,29 +42,20 @@
 }
 
 .hud-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 300;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.38em;
   line-height: 1;
-  margin-bottom: 4px;
-}
-
-.hud-title-orb {
-  color: rgba(142, 200, 212, 0.8);
-  font-weight: 400;
-}
-
-.hud-title-ital {
-  color: rgba(200, 205, 215, 0.35);
-  font-weight: 200;
+  margin-bottom: 5px;
+  color: rgba(122, 179, 190, 0.65);
 }
 
 .hud-subtitle {
-  font-size: 8px;
+  font-size: 7.5px;
   font-weight: 400;
-  letter-spacing: 0.35em;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: rgba(200, 205, 215, 0.2);
+  color: rgba(180, 185, 195, 0.16);
   margin-bottom: 22px;
 }
 
@@ -78,60 +69,60 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: 0.1em;
 }
 
 .hud-stat.total {
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid rgba(142, 200, 212, 0.06);
+  border-top: 1px solid rgba(122, 179, 190, 0.05);
 }
 
 .hud-stat-dot {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .hud-stat-dot.sat {
-  background: #8ec8d4;
-  box-shadow: 0 0 6px rgba(142, 200, 212, 0.3);
+  background: #7ab3be;
+  box-shadow: 0 0 5px rgba(122, 179, 190, 0.25);
 }
 
 .hud-stat-dot.debris {
-  background: #c4826a;
-  box-shadow: 0 0 6px rgba(196, 130, 106, 0.3);
+  background: #b0766a;
+  box-shadow: 0 0 5px rgba(176, 118, 106, 0.25);
 }
 
 .hud-stat-dot.station {
-  background: #d4cfc2;
-  box-shadow: 0 0 6px rgba(212, 207, 194, 0.3);
+  background: #c4bfb2;
+  box-shadow: 0 0 5px rgba(196, 191, 178, 0.25);
 }
 
 .hud-stat-label {
-  color: rgba(200, 205, 215, 0.3);
+  color: rgba(180, 185, 195, 0.25);
   font-weight: 400;
   text-transform: uppercase;
-  min-width: 80px;
-  letter-spacing: 0.12em;
+  min-width: 105px;
+  letter-spacing: 0.14em;
 }
 
 .hud-stat-value {
-  color: rgba(200, 205, 215, 0.65);
+  color: rgba(180, 185, 195, 0.55);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
 
 .hud-stat-value.loading {
-  color: rgba(142, 200, 212, 0.5);
-  animation: pulse-text 2.5s ease-in-out infinite;
+  color: rgba(122, 179, 190, 0.4);
+  animation: pulse-text 3s ease-in-out infinite;
 }
 
 @keyframes pulse-text {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
 }
 
 /* ---- HUD Bottom Left ---- */
@@ -148,19 +139,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 9px;
-  letter-spacing: 0.12em;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
 }
 
 .hud-sys-label {
-  color: rgba(200, 205, 215, 0.2);
+  color: rgba(180, 185, 195, 0.16);
   font-weight: 400;
   text-transform: uppercase;
   min-width: 90px;
 }
 
 .hud-sys-value {
-  color: rgba(200, 205, 215, 0.4);
+  color: rgba(180, 185, 195, 0.32);
   font-weight: 300;
 }
 
@@ -183,70 +174,68 @@
 }
 
 .hud-status-dot {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
 }
 
 .hud-status-dot.active {
-  background: rgba(142, 200, 212, 0.6);
-  box-shadow: 0 0 6px rgba(142, 200, 212, 0.25);
-  animation: pulse-dot 3s ease-in-out infinite;
+  background: rgba(122, 179, 190, 0.5);
+  box-shadow: 0 0 5px rgba(122, 179, 190, 0.2);
+  animation: pulse-dot 3.5s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
 }
 
 .hud-status-text {
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(200, 205, 215, 0.25);
+  color: rgba(180, 185, 195, 0.2);
 }
 
 /* ---- Corner Brackets ---- */
 .hud-bracket {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
 }
 
 .hud-bracket.top-left {
   top: 16px;
   left: 16px;
-  border-top: 1px solid rgba(142, 200, 212, 0.08);
-  border-left: 1px solid rgba(142, 200, 212, 0.08);
+  border-top: 1px solid rgba(122, 179, 190, 0.06);
+  border-left: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.top-right {
   top: 16px;
   right: 16px;
-  border-top: 1px solid rgba(142, 200, 212, 0.08);
-  border-right: 1px solid rgba(142, 200, 212, 0.08);
+  border-top: 1px solid rgba(122, 179, 190, 0.06);
+  border-right: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.bottom-left {
   bottom: 16px;
   left: 16px;
-  border-bottom: 1px solid rgba(142, 200, 212, 0.08);
-  border-left: 1px solid rgba(142, 200, 212, 0.08);
+  border-bottom: 1px solid rgba(122, 179, 190, 0.06);
+  border-left: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.bottom-right {
   bottom: 16px;
   right: 16px;
-  border-bottom: 1px solid rgba(142, 200, 212, 0.08);
-  border-right: 1px solid rgba(142, 200, 212, 0.08);
+  border-bottom: 1px solid rgba(122, 179, 190, 0.06);
+  border-right: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 /* ============================================
-   Data Card — Projected Light Construct
-   No glassmorphism. No heavy box.
-   Text floating on invisible glass.
+   Data Card — Object Classification Construct
    ============================================ */
 .data-card-container {
   position: absolute;
@@ -257,16 +246,25 @@
 }
 
 .data-card {
-  width: 260px;
-  background: rgba(10, 11, 15, 0.35);
-  border: 1px solid rgba(142, 200, 212, 0.08);
-  border-radius: 2px;
+  width: 255px;
+  background: rgba(8, 9, 13, 0.3);
+  border: 1px solid rgba(122, 179, 190, 0.06);
+  border-radius: 1px;
   padding: 18px 20px;
   pointer-events: auto;
 }
 
 .data-card-header {
   margin-bottom: 14px;
+}
+
+.data-card-section-label {
+  font-size: 7px;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(180, 185, 195, 0.16);
+  margin-bottom: 8px;
 }
 
 .data-card-type {
@@ -288,10 +286,10 @@
 }
 
 .data-card-name {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
-  letter-spacing: 0.06em;
-  color: rgba(200, 205, 215, 0.85);
+  letter-spacing: 0.08em;
+  color: rgba(180, 185, 195, 0.75);
 }
 
 .data-card-divider {
@@ -309,19 +307,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-size: 9.5px;
 }
 
 .data-label {
   font-weight: 400;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(200, 205, 215, 0.25);
+  color: rgba(180, 185, 195, 0.2);
 }
 
 .data-value {
   font-weight: 300;
-  color: rgba(200, 205, 215, 0.6);
+  color: rgba(180, 185, 195, 0.5);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.03em;
 }
@@ -333,28 +331,28 @@
   gap: 6px;
   margin-top: 14px;
   padding-top: 10px;
-  border-top: 1px solid rgba(142, 200, 212, 0.04);
+  border-top: 1px solid rgba(122, 179, 190, 0.03);
 }
 
 .data-card-footer-text {
-  font-size: 7px;
+  font-size: 6.5px;
   font-weight: 400;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(142, 200, 212, 0.3);
+  color: rgba(122, 179, 190, 0.22);
 }
 
 .data-card-footer-dot {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgba(142, 200, 212, 0.5);
-  animation: pulse-dot-track 2.5s ease-in-out infinite;
+  background: rgba(122, 179, 190, 0.4);
+  animation: pulse-dot-track 3s ease-in-out infinite;
 }
 
 @keyframes pulse-dot-track {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.55; }
 }
 
 /* ---- Scrollbar (hidden) ---- */
@@ -364,6 +362,6 @@
 
 /* ---- Selection ---- */
 ::selection {
-  background: rgba(142, 200, 212, 0.15);
-  color: rgba(200, 205, 215, 0.9);
+  background: rgba(122, 179, 190, 0.1);
+  color: rgba(180, 185, 195, 0.85);
 }

@@ -28,10 +28,10 @@ export default function Scene() {
         toneMapping: 0,
         outputColorSpace: 'srgb',
       }}
-      style={{ background: '#0a0b0f' }}
+      style={{ background: '#08090d' }}
     >
       {/* Minimal lighting — globe is self-illuminated via emissive shaders */}
-      <ambientLight intensity={0.03} color="#8a9aad" />
+      <ambientLight intensity={0.02} color="#7a8a9d" />
 
       {/* Controls — cinematic easing */}
       <OrbitControls
@@ -59,7 +59,7 @@ export default function Scene() {
           intensity={0.6}
           mipmapBlur
         />
-        <Vignette eskil={false} offset={0.25} darkness={0.65} />
+        <Vignette eskil={false} offset={0.22} darkness={0.72} />
       </EffectComposer>
     </Canvas>
   );

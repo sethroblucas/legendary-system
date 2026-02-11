@@ -25,9 +25,9 @@ export default function OrbitPath({ tle1, tle2 }: OrbitPathProps) {
     <line>
       <primitive object={geometry} attach="geometry" />
       <lineBasicMaterial
-        color="#8ec8d4"
+        color="#7ab3be"
         transparent
-        opacity={0.12}
+        opacity={0.09}
         linewidth={1}
         toneMapped={false}
         blending={THREE.AdditiveBlending}

@@ -122,10 +122,10 @@ export default function Satellites() {
             <meshBasicMaterial
               color={
                 selectedSatellite.type === 'station'
-                  ? '#d4cfc2'
+                  ? '#c4bfb2'
                   : selectedSatellite.type === 'debris'
-                  ? '#c4826a'
-                  : '#8ec8d4'
+                  ? '#b0766a'
+                  : '#7ab3be'
               }
               transparent
               opacity={0.8}
@@ -145,10 +145,10 @@ export default function Satellites() {
             <meshBasicMaterial
               color={
                 selectedSatellite.type === 'station'
-                  ? '#d4cfc2'
+                  ? '#c4bfb2'
                   : selectedSatellite.type === 'debris'
-                  ? '#c4826a'
-                  : '#8ec8d4'
+                  ? '#b0766a'
+                  : '#7ab3be'
               }
               transparent
               opacity={0.15}

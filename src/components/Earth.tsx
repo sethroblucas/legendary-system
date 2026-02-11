@@ -7,7 +7,7 @@ function CoreSphere() {
   return (
     <mesh>
       <sphereGeometry args={[0.98, 96, 96]} />
-      <meshBasicMaterial color="#08090c" />
+      <meshBasicMaterial color="#06070a" />
     </mesh>
   );
 }
@@ -67,14 +67,65 @@ function HoloGrid() {
           float landMask = smoothstep(0.1, 0.45, (n1 + n2) * 0.5 + 0.5);
 
           // Desaturated cyan-white base
-          vec3 gridColor = vec3(0.65, 0.82, 0.88);
+          vec3 gridColor = vec3(0.55, 0.72, 0.78);
           // Warm amber tint for land regions
-          vec3 landColor = vec3(0.78, 0.68, 0.52);
+          vec3 landColor = vec3(0.68, 0.60, 0.46);
 
           vec3 baseColor = mix(gridColor, landColor, landMask * 0.15);
 
+          // --- Subtle AETHON mark etched into projection grid ---
+          // Positioned along equatorial band, only visible at grazing angles
+          float markLat = smoothstep(0.06, 0.0, abs(lat - 0.15));
+          float markLonStart = lon + 0.5; // shift into 0..1ish range
+          float ml = fract(markLonStart * 0.5) * 6.0; // 6 character slots
+
+          // Simplified segment-display characters: A E T H O N
+          // Each character occupies ml in [i, i+1), with gx as x-coord within char
+          float gx = fract(ml);
+          float gy = fract((lat - 0.12) * 30.0);
+          int charIdx = int(floor(ml));
+
+          float ch = 0.0;
+          // Thin vertical/horizontal bars to approximate each letter
+          if (charIdx == 0) { // A
+            float lBar = step(0.15, gx) * step(gx, 0.2);
+            float rBar = step(0.75, gx) * step(gx, 0.8);
+            float topBar = step(0.8, gy) * step(0.2, gx) * step(gx, 0.75);
+            float midBar = step(0.45, gy) * step(gy, 0.55) * step(0.2, gx) * step(gx, 0.75);
+            ch = max(max(lBar, rBar), max(topBar, midBar));
+          } else if (charIdx == 1) { // E
+            float lBar = step(0.15, gx) * step(gx, 0.2);
+            float topBar = step(0.8, gy) * step(0.2, gx) * step(gx, 0.7);
+            float midBar = step(0.45, gy) * step(gy, 0.55) * step(0.2, gx) * step(gx, 0.6);
+            float botBar = step(gy, 0.15) * step(0.2, gx) * step(gx, 0.7);
+            ch = max(max(lBar, topBar), max(midBar, botBar));
+          } else if (charIdx == 2) { // T
+            float topBar = step(0.8, gy) * step(0.1, gx) * step(gx, 0.85);
+            float vBar = step(0.42, gx) * step(gx, 0.52);
+            ch = max(topBar, vBar);
+          } else if (charIdx == 3) { // H
+            float lBar = step(0.15, gx) * step(gx, 0.2);
+            float rBar = step(0.75, gx) * step(gx, 0.8);
+            float midBar = step(0.45, gy) * step(gy, 0.55) * step(0.2, gx) * step(gx, 0.75);
+            ch = max(max(lBar, rBar), midBar);
+          } else if (charIdx == 4) { // O
+            float lBar = step(0.15, gx) * step(gx, 0.2);
+            float rBar = step(0.75, gx) * step(gx, 0.8);
+            float topBar = step(0.8, gy) * step(0.2, gx) * step(gx, 0.75);
+            float botBar = step(gy, 0.15) * step(0.2, gx) * step(gx, 0.75);
+            ch = max(max(lBar, rBar), max(topBar, botBar));
+          } else if (charIdx == 5) { // N
+            float lBar = step(0.15, gx) * step(gx, 0.2);
+            float rBar = step(0.75, gx) * step(gx, 0.8);
+            float diag = step(abs(gx - 0.2 - (gy * 0.6)), 0.06);
+            ch = max(max(lBar, rBar), diag);
+          }
+
+          // Only reveal at grazing Fresnel angles — almost hidden
+          float markAlpha = ch * markLat * fresnel * 0.04;
+
           // Grid luminosity
-          float gridAlpha = grid * 0.22 * (0.4 + fresnel * 0.6);
+          float gridAlpha = grid * 0.22 * (0.4 + fresnel * 0.6) + markAlpha;
 
           // Faint surface fill for land regions
           float surfaceAlpha = landMask * 0.035 * (0.5 + fresnel * 0.5);
@@ -127,9 +178,8 @@ function AtmosphereShell() {
         varying vec3 vViewDir;
         void main() {
           float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 3.5);
-          // Desaturated cyan-white atmospheric rim
-          vec3 color = vec3(0.6, 0.78, 0.85);
-          float alpha = fresnel * 0.18;
+          vec3 color = vec3(0.5, 0.66, 0.72);
+          float alpha = fresnel * 0.15;
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -167,8 +217,8 @@ function OuterGlow() {
         varying vec3 vViewDir;
         void main() {
           float fresnel = pow(1.0 - abs(dot(vNormal, vViewDir)), 4.0);
-          vec3 color = vec3(0.55, 0.7, 0.76);
-          float alpha = fresnel * 0.08;
+          vec3 color = vec3(0.45, 0.58, 0.64);
+          float alpha = fresnel * 0.06;
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -242,8 +292,8 @@ function NoiseField() {
           vec3 noiseCoord = vPosition * 4.0 + vec3(uTime * 0.02, uTime * 0.015, uTime * 0.01);
           float n = noise(noiseCoord) * 0.6 + noise(noiseCoord * 2.0) * 0.3;
 
-          vec3 color = vec3(0.6, 0.72, 0.78);
-          float alpha = n * fresnel * 0.06;
+          vec3 color = vec3(0.5, 0.6, 0.66);
+          float alpha = n * fresnel * 0.05;
 
           gl_FragColor = vec4(color, alpha);
         }
