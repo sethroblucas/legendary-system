@@ -3,11 +3,12 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 // --- Layer 1: Dark Core Sphere ---
+// Opaque — writes depth so transparent shell back-faces are properly occluded
 function CoreSphere() {
   return (
-    <mesh>
+    <mesh renderOrder={0}>
       <sphereGeometry args={[0.98, 96, 96]} />
-      <meshBasicMaterial color="#06070a" />
+      <meshBasicMaterial color="#06070a" depthWrite />
     </mesh>
   );
 }
@@ -152,7 +153,7 @@ function HoloGrid() {
   });
 
   return (
-    <mesh scale={[1.002, 1.002, 1.002]}>
+    <mesh renderOrder={1} scale={[1.002, 1.002, 1.002]}>
       <sphereGeometry args={[1, 128, 128]} />
       <primitive object={material} ref={materialRef} attach="material" />
     </mesh>
@@ -191,7 +192,7 @@ function AtmosphereShell() {
   }, []);
 
   return (
-    <mesh scale={[1.04, 1.04, 1.04]}>
+    <mesh renderOrder={2} scale={[1.04, 1.04, 1.04]}>
       <sphereGeometry args={[1, 64, 64]} />
       <primitive object={material} attach="material" />
     </mesh>
@@ -230,7 +231,7 @@ function OuterGlow() {
   }, []);
 
   return (
-    <mesh scale={[1.15, 1.15, 1.15]}>
+    <mesh renderOrder={3} scale={[1.15, 1.15, 1.15]}>
       <sphereGeometry args={[1, 48, 48]} />
       <primitive object={material} attach="material" />
     </mesh>
@@ -316,7 +317,7 @@ function NoiseField() {
   });
 
   return (
-    <mesh ref={meshRef} scale={[1.06, 1.06, 1.06]}>
+    <mesh ref={meshRef} renderOrder={4} scale={[1.06, 1.06, 1.06]}>
       <sphereGeometry args={[1, 64, 64]} />
       <primitive object={material} ref={materialRef} attach="material" />
     </mesh>

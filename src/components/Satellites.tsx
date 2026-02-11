@@ -1,9 +1,89 @@
 import { useRef, useCallback, useMemo } from 'react';
-import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useSatelliteStore } from '../store/useSatelliteStore';
 import { useOrbitPropagation } from '../hooks/useOrbitPropagation';
 import OrbitPath from './OrbitPath';
+
+// Animated selection highlight — pulsing core + ring + halo
+function SelectionHighlight({
+  position,
+  color,
+}: {
+  position: { x: number; y: number; z: number };
+  color: string;
+}) {
+  const ringRef = useRef<THREE.Mesh>(null);
+  const coreRef = useRef<THREE.Mesh>(null);
+  const timeRef = useRef(0);
+
+  useFrame((_, delta) => {
+    timeRef.current += delta;
+    const pulse = 0.7 + 0.3 * Math.sin(timeRef.current * 2.5);
+    const ringPulse = 1.0 + 0.15 * Math.sin(timeRef.current * 1.8);
+
+    if (ringRef.current) {
+      ringRef.current.scale.setScalar(ringPulse);
+      const mat = ringRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.12 * pulse;
+    }
+    if (coreRef.current) {
+      const mat = coreRef.current.material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.65 + 0.15 * pulse;
+    }
+  });
+
+  const pos: [number, number, number] = [position.x, position.y, position.z];
+
+  return (
+    <group>
+      {/* Inner core — bright */}
+      <mesh ref={coreRef} position={pos} renderOrder={10}>
+        <sphereGeometry args={[0.012, 12, 12]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.8}
+          toneMapped={false}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* Pulsing ring */}
+      <mesh ref={ringRef} position={pos} renderOrder={11}>
+        <ringGeometry args={[0.022, 0.032, 32]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.12}
+          toneMapped={false}
+          side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* Soft glow halo */}
+      <mesh position={pos} renderOrder={9}>
+        <sphereGeometry args={[0.028, 12, 12]} />
+        <meshBasicMaterial
+          color={color}
+          transparent
+          opacity={0.1}
+          toneMapped={false}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function getTypeColor(type: string): string {
+  if (type === 'station') return '#c4bfb2';
+  if (type === 'debris') return '#b0766a';
+  return '#7ab3be';
+}
 
 export default function Satellites() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
@@ -11,7 +91,6 @@ export default function Satellites() {
   const selectSatellite = useSatelliteStore((s) => s.selectSatellite);
   const selectedSatellite = useSatelliteStore((s) => s.selectedSatellite);
   const satellites = useSatelliteStore((s) => s.satellites);
-  const { raycaster } = useThree();
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorAttr = useRef<THREE.InstancedBufferAttribute | null>(null);
@@ -54,21 +133,16 @@ export default function Satellites() {
     }
   });
 
+  // Use R3F event's instanceId directly — reliable, no re-raycast
   const handleClick = useCallback(
     (event: ThreeEvent<MouseEvent>) => {
       event.stopPropagation();
-      const mesh = meshRef.current;
-      if (!mesh) return;
-
-      const intersects = raycaster.intersectObject(mesh);
-      if (intersects.length > 0 && intersects[0].instanceId !== undefined) {
-        const instanceId = intersects[0].instanceId;
-        if (instanceId < satellites.length) {
-          selectSatellite(satellites[instanceId]);
-        }
+      const instanceId = event.instanceId;
+      if (instanceId !== undefined && instanceId < satellites.length) {
+        selectSatellite(satellites[instanceId]);
       }
     },
-    [raycaster, satellites, selectSatellite]
+    [satellites, selectSatellite]
   );
 
   const handlePointerMissed = useCallback(() => {
@@ -89,6 +163,7 @@ export default function Satellites() {
         onClick={handleClick}
         onPointerMissed={handlePointerMissed}
         frustumCulled={false}
+        renderOrder={5}
       >
         <sphereGeometry args={[0.006, 6, 6]}>
           <instancedBufferAttribute
@@ -107,57 +182,13 @@ export default function Satellites() {
         />
       </instancedMesh>
 
-      {/* Selected satellite — soft luminous highlight */}
+      {/* Selected satellite — animated highlight + orbit path */}
       {selectedSatellite?.position && (
         <group>
-          {/* Inner core */}
-          <mesh
-            position={[
-              selectedSatellite.position.x,
-              selectedSatellite.position.y,
-              selectedSatellite.position.z,
-            ]}
-          >
-            <sphereGeometry args={[0.012, 12, 12]} />
-            <meshBasicMaterial
-              color={
-                selectedSatellite.type === 'station'
-                  ? '#c4bfb2'
-                  : selectedSatellite.type === 'debris'
-                  ? '#b0766a'
-                  : '#7ab3be'
-              }
-              transparent
-              opacity={0.8}
-              toneMapped={false}
-            />
-          </mesh>
-
-          {/* Outer glow */}
-          <mesh
-            position={[
-              selectedSatellite.position.x,
-              selectedSatellite.position.y,
-              selectedSatellite.position.z,
-            ]}
-          >
-            <sphereGeometry args={[0.025, 12, 12]} />
-            <meshBasicMaterial
-              color={
-                selectedSatellite.type === 'station'
-                  ? '#c4bfb2'
-                  : selectedSatellite.type === 'debris'
-                  ? '#b0766a'
-                  : '#7ab3be'
-              }
-              transparent
-              opacity={0.15}
-              toneMapped={false}
-              blending={THREE.AdditiveBlending}
-              depthWrite={false}
-            />
-          </mesh>
-
+          <SelectionHighlight
+            position={selectedSatellite.position}
+            color={getTypeColor(selectedSatellite.type)}
+          />
           <OrbitPath
             tle1={selectedSatellite.tle1}
             tle2={selectedSatellite.tle2}

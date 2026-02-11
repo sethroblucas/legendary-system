@@ -8,31 +8,30 @@ interface OrbitPathProps {
 }
 
 export default function OrbitPath({ tle1, tle2 }: OrbitPathProps) {
-  const points = useMemo(() => {
+  const lineObj = useMemo(() => {
     const now = new Date();
     const pathPoints = propagateOrbitPath(tle1, tle2, now, 120, 95);
-    return pathPoints.map((p) => new THREE.Vector3(p.x, p.y, p.z));
+    const points = pathPoints.map((p) => new THREE.Vector3(p.x, p.y, p.z));
+
+    if (points.length < 2) return null;
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({
+      color: '#7ab3be',
+      transparent: true,
+      opacity: 0.09,
+      linewidth: 1,
+      toneMapped: false,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+
+    const line = new THREE.Line(geometry, material);
+    line.renderOrder = 8;
+    return line;
   }, [tle1, tle2]);
 
-  const geometry = useMemo(() => {
-    if (points.length < 2) return null;
-    return new THREE.BufferGeometry().setFromPoints(points);
-  }, [points]);
+  if (!lineObj) return null;
 
-  if (!geometry) return null;
-
-  return (
-    <line>
-      <primitive object={geometry} attach="geometry" />
-      <lineBasicMaterial
-        color="#7ab3be"
-        transparent
-        opacity={0.09}
-        linewidth={1}
-        toneMapped={false}
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </line>
-  );
+  return <primitive object={lineObj} />;
 }
