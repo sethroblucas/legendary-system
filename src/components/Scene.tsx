@@ -1,16 +1,20 @@
 import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import {
+  EffectComposer,
+  Bloom,
+  Vignette,
+} from '@react-three/postprocessing';
 import Earth from './Earth';
 import Satellites from './Satellites';
-import Stars from './Stars';
+import AmbientParticles from './AmbientParticles';
 
 function LoadingFallback() {
   return (
     <mesh>
       <sphereGeometry args={[1, 32, 32]} />
-      <meshBasicMaterial color="#0a0f1a" wireframe />
+      <meshBasicMaterial color="#08090c" wireframe />
     </mesh>
   );
 }
@@ -18,45 +22,44 @@ function LoadingFallback() {
 export default function Scene() {
   return (
     <Canvas
-      camera={{ position: [0, 0, 3.5], fov: 45, near: 0.01, far: 100 }}
+      camera={{ position: [0, 0.3, 3.5], fov: 42, near: 0.01, far: 100 }}
       gl={{
         antialias: true,
-        toneMapping: 0, // NoToneMapping
+        toneMapping: 0,
         outputColorSpace: 'srgb',
       }}
-      style={{ background: '#05070A' }}
+      style={{ background: '#08090d' }}
     >
-      {/* Lighting */}
-      <ambientLight intensity={0.08} />
-      <directionalLight position={[5, 3, 5]} intensity={1.2} color="#ffffff" />
-      <pointLight position={[-5, -3, -5]} intensity={0.15} color="#00F0FF" />
+      {/* Minimal lighting — globe is self-illuminated via emissive shaders */}
+      <ambientLight intensity={0.02} color="#7a8a9d" />
 
-      {/* Controls */}
+      {/* Controls — cinematic easing */}
       <OrbitControls
         enablePan={false}
         enableDamping
-        dampingFactor={0.05}
-        rotateSpeed={0.4}
-        minDistance={1.5}
-        maxDistance={8}
-        zoomSpeed={0.6}
+        dampingFactor={0.03}
+        rotateSpeed={0.3}
+        minDistance={1.8}
+        maxDistance={7}
+        zoomSpeed={0.4}
       />
 
       {/* Scene */}
       <Suspense fallback={<LoadingFallback />}>
-        <Stars />
+        <AmbientParticles />
         <Earth />
         <Satellites />
       </Suspense>
 
-      {/* Postprocessing */}
+      {/* Postprocessing — restrained bloom + cinematic vignette */}
       <EffectComposer>
         <Bloom
-          luminanceThreshold={0.6}
-          luminanceSmoothing={0.9}
-          intensity={0.4}
+          luminanceThreshold={0.3}
+          luminanceSmoothing={0.95}
+          intensity={0.6}
           mipmapBlur
         />
+        <Vignette eskil={false} offset={0.22} darkness={0.72} />
       </EffectComposer>
     </Canvas>
   );

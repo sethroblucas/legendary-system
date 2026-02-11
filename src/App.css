@@ -1,5 +1,13 @@
 /* ============================================
-   ORBital — Design System
+   AETHON — Planetary Intelligence Construct
+   ============================================
+   Color philosophy:
+   - Primary glow: desaturated cyan (#7ab3be)
+   - Warm accent: pale amber (#b09a6a)
+   - Unregistered: muted terracotta (#b0766a)
+   - Station: warm bone (#c4bfb2)
+   - Background: deep void (#08090d)
+   - Text: muted grey-blue, never pure white
    ============================================ */
 
 .app {
@@ -7,7 +15,7 @@
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #05070A;
+  background: #08090d;
 }
 
 /* ---- Scene ---- */
@@ -34,94 +42,87 @@
 }
 
 .hud-title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.hud-title-orb {
-  color: #00F0FF;
-}
-
-.hud-title-ital {
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 18px;
   font-weight: 300;
+  letter-spacing: 0.38em;
+  line-height: 1;
+  margin-bottom: 5px;
+  color: rgba(122, 179, 190, 0.65);
 }
 
 .hud-subtitle {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.25em;
+  font-size: 7.5px;
+  font-weight: 400;
+  letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.3);
-  margin-bottom: 20px;
+  color: rgba(180, 185, 195, 0.16);
+  margin-bottom: 22px;
 }
 
 .hud-stats {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .hud-stat {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
 }
 
 .hud-stat.total {
-  margin-top: 4px;
+  margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(122, 179, 190, 0.05);
 }
 
 .hud-stat-dot {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .hud-stat-dot.sat {
-  background: #00F0FF;
-  box-shadow: 0 0 6px #00F0FF66;
+  background: #7ab3be;
+  box-shadow: 0 0 5px rgba(122, 179, 190, 0.25);
 }
 
 .hud-stat-dot.debris {
-  background: #FF6B3B;
-  box-shadow: 0 0 6px #FF6B3B66;
+  background: #b0766a;
+  box-shadow: 0 0 5px rgba(176, 118, 106, 0.25);
 }
 
 .hud-stat-dot.station {
-  background: #FFFFFF;
-  box-shadow: 0 0 6px #FFFFFF66;
+  background: #c4bfb2;
+  box-shadow: 0 0 5px rgba(196, 191, 178, 0.25);
 }
 
 .hud-stat-label {
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 500;
+  color: rgba(180, 185, 195, 0.25);
+  font-weight: 400;
   text-transform: uppercase;
-  min-width: 80px;
+  min-width: 105px;
+  letter-spacing: 0.14em;
 }
 
 .hud-stat-value {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 600;
+  color: rgba(180, 185, 195, 0.55);
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
 
 .hud-stat-value.loading {
-  color: #00F0FF;
-  animation: pulse-text 1.5s ease-in-out infinite;
+  color: rgba(122, 179, 190, 0.4);
+  animation: pulse-text 3s ease-in-out infinite;
 }
 
 @keyframes pulse-text {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.6; }
 }
 
 /* ---- HUD Bottom Left ---- */
@@ -131,32 +132,32 @@
   left: 32px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .hud-sys-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
 }
 
 .hud-sys-label {
-  color: rgba(255, 255, 255, 0.3);
-  font-weight: 500;
+  color: rgba(180, 185, 195, 0.16);
+  font-weight: 400;
   text-transform: uppercase;
   min-width: 90px;
 }
 
 .hud-sys-value {
-  color: rgba(255, 255, 255, 0.55);
-  font-weight: 400;
+  color: rgba(180, 185, 195, 0.32);
+  font-weight: 300;
 }
 
 .hud-sys-value.mono {
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 /* ---- HUD Top Right ---- */
@@ -173,67 +174,69 @@
 }
 
 .hud-status-dot {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
 }
 
 .hud-status-dot.active {
-  background: #00FF88;
-  box-shadow: 0 0 8px #00FF8866;
-  animation: pulse-dot 2s ease-in-out infinite;
+  background: rgba(122, 179, 190, 0.5);
+  box-shadow: 0 0 5px rgba(122, 179, 190, 0.2);
+  animation: pulse-dot 3.5s ease-in-out infinite;
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 0.6; box-shadow: 0 0 4px #00FF8844; }
-  50% { opacity: 1; box-shadow: 0 0 10px #00FF8888; }
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
 }
 
 .hud-status-text {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.15em;
+  font-size: 8.5px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(180, 185, 195, 0.2);
 }
 
 /* ---- Corner Brackets ---- */
 .hud-bracket {
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   pointer-events: none;
 }
 
 .hud-bracket.top-left {
   top: 16px;
   left: 16px;
-  border-top: 1px solid rgba(0, 240, 255, 0.15);
-  border-left: 1px solid rgba(0, 240, 255, 0.15);
+  border-top: 1px solid rgba(122, 179, 190, 0.06);
+  border-left: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.top-right {
   top: 16px;
   right: 16px;
-  border-top: 1px solid rgba(0, 240, 255, 0.15);
-  border-right: 1px solid rgba(0, 240, 255, 0.15);
+  border-top: 1px solid rgba(122, 179, 190, 0.06);
+  border-right: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.bottom-left {
   bottom: 16px;
   left: 16px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-  border-left: 1px solid rgba(0, 240, 255, 0.15);
+  border-bottom: 1px solid rgba(122, 179, 190, 0.06);
+  border-left: 1px solid rgba(122, 179, 190, 0.06);
 }
 
 .hud-bracket.bottom-right {
   bottom: 16px;
   right: 16px;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-  border-right: 1px solid rgba(0, 240, 255, 0.15);
+  border-bottom: 1px solid rgba(122, 179, 190, 0.06);
+  border-right: 1px solid rgba(122, 179, 190, 0.06);
 }
 
-/* ---- Data Card ---- */
+/* ============================================
+   Data Card — Object Classification Construct
+   ============================================ */
 .data-card-container {
   position: absolute;
   bottom: 32px;
@@ -243,46 +246,50 @@
 }
 
 .data-card {
-  width: 280px;
-  background: rgba(10, 15, 25, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 240, 255, 0.12);
-  border-radius: 8px;
+  width: 255px;
+  background: rgba(8, 9, 13, 0.3);
+  border: 1px solid rgba(122, 179, 190, 0.06);
+  border-radius: 1px;
   padding: 18px 20px;
   pointer-events: auto;
-  box-shadow:
-    0 0 40px rgba(0, 0, 0, 0.4),
-    0 0 1px rgba(0, 240, 255, 0.1) inset;
 }
 
 .data-card-header {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.data-card-section-label {
+  font-size: 7px;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(180, 185, 195, 0.16);
+  margin-bottom: 8px;
 }
 
 .data-card-type {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .type-dot {
-  width: 5px;
-  height: 5px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
 .data-card-name {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.95);
+  font-size: 13px;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  color: rgba(180, 185, 195, 0.75);
 }
 
 .data-card-divider {
@@ -293,28 +300,28 @@
 .data-card-body {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .data-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 9.5px;
 }
 
 .data-label {
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-weight: 400;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(180, 185, 195, 0.2);
 }
 
 .data-value {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 300;
+  color: rgba(180, 185, 195, 0.5);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
 }
 
 .data-card-footer {
@@ -324,28 +331,28 @@
   gap: 6px;
   margin-top: 14px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(122, 179, 190, 0.03);
 }
 
 .data-card-footer-text {
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+  font-size: 6.5px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(0, 240, 255, 0.5);
+  color: rgba(122, 179, 190, 0.22);
 }
 
 .data-card-footer-dot {
-  width: 5px;
-  height: 5px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  background: #00F0FF;
-  animation: pulse-dot-cyan 1.5s ease-in-out infinite;
+  background: rgba(122, 179, 190, 0.4);
+  animation: pulse-dot-track 3s ease-in-out infinite;
 }
 
-@keyframes pulse-dot-cyan {
-  0%, 100% { opacity: 0.4; box-shadow: 0 0 3px #00F0FF44; }
-  50% { opacity: 1; box-shadow: 0 0 8px #00F0FF88; }
+@keyframes pulse-dot-track {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.55; }
 }
 
 /* ---- Scrollbar (hidden) ---- */
@@ -355,6 +362,6 @@
 
 /* ---- Selection ---- */
 ::selection {
-  background: rgba(0, 240, 255, 0.2);
-  color: #fff;
+  background: rgba(122, 179, 190, 0.1);
+  color: rgba(180, 185, 195, 0.85);
 }

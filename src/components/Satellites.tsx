@@ -15,12 +15,15 @@ export default function Satellites() {
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const colorAttr = useRef<THREE.InstancedBufferAttribute | null>(null);
+  const flickerRef = useRef(0);
 
   // Update instanced mesh positions every frame
-  useFrame(() => {
+  useFrame((_, delta) => {
     const mesh = meshRef.current;
     const posData = positionsRef.current;
     if (!mesh || posData.count === 0) return;
+
+    flickerRef.current += delta;
 
     const positions = posData.positions;
     const colors = posData.colors;
@@ -31,17 +34,20 @@ export default function Satellites() {
       const y = positions[idx3 + 1];
       const z = positions[idx3 + 2];
 
-      // Skip satellites that haven't been propagated yet
       if (x === 0 && y === 0 && z === 0) continue;
 
       dummy.position.set(x, y, z);
+
+      // Very subtle per-node scale flicker
+      const flicker = 0.85 + 0.15 * Math.sin(flickerRef.current * 1.2 + i * 0.7);
+      dummy.scale.setScalar(flicker);
+
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
     }
 
     mesh.instanceMatrix.needsUpdate = true;
 
-    // Update colors
     if (colorAttr.current && colors.length > 0) {
       colorAttr.current.array = colors;
       colorAttr.current.needsUpdate = true;
@@ -54,7 +60,6 @@ export default function Satellites() {
       const mesh = meshRef.current;
       if (!mesh) return;
 
-      // Get intersection instance ID
       const intersects = raycaster.intersectObject(mesh);
       if (intersects.length > 0 && intersects[0].instanceId !== undefined) {
         const instanceId = intersects[0].instanceId;
@@ -72,7 +77,6 @@ export default function Satellites() {
 
   const count = satellites.length || 1;
 
-  // Create initial color array
   const initialColors = useMemo(() => {
     return new Float32Array(count * 3).fill(0);
   }, [count]);
@@ -86,7 +90,7 @@ export default function Satellites() {
         onPointerMissed={handlePointerMissed}
         frustumCulled={false}
       >
-        <sphereGeometry args={[0.008, 6, 6]}>
+        <sphereGeometry args={[0.006, 6, 6]}>
           <instancedBufferAttribute
             ref={colorAttr}
             attach="attributes-color"
@@ -96,15 +100,17 @@ export default function Satellites() {
         <meshBasicMaterial
           vertexColors
           transparent
-          opacity={0.9}
+          opacity={0.7}
           toneMapped={false}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
         />
       </instancedMesh>
 
-      {/* Selected satellite highlight */}
+      {/* Selected satellite — soft luminous highlight */}
       {selectedSatellite?.position && (
         <group>
-          {/* Glow ring */}
+          {/* Inner core */}
           <mesh
             position={[
               selectedSatellite.position.x,
@@ -112,22 +118,46 @@ export default function Satellites() {
               selectedSatellite.position.z,
             ]}
           >
-            <sphereGeometry args={[0.018, 16, 16]} />
+            <sphereGeometry args={[0.012, 12, 12]} />
             <meshBasicMaterial
               color={
                 selectedSatellite.type === 'station'
-                  ? '#FFFFFF'
+                  ? '#c4bfb2'
                   : selectedSatellite.type === 'debris'
-                  ? '#FF6B3B'
-                  : '#00F0FF'
+                  ? '#b0766a'
+                  : '#7ab3be'
               }
               transparent
-              opacity={0.35}
+              opacity={0.8}
               toneMapped={false}
             />
           </mesh>
 
-          {/* Orbit path */}
+          {/* Outer glow */}
+          <mesh
+            position={[
+              selectedSatellite.position.x,
+              selectedSatellite.position.y,
+              selectedSatellite.position.z,
+            ]}
+          >
+            <sphereGeometry args={[0.025, 12, 12]} />
+            <meshBasicMaterial
+              color={
+                selectedSatellite.type === 'station'
+                  ? '#c4bfb2'
+                  : selectedSatellite.type === 'debris'
+                  ? '#b0766a'
+                  : '#7ab3be'
+              }
+              transparent
+              opacity={0.15}
+              toneMapped={false}
+              blending={THREE.AdditiveBlending}
+              depthWrite={false}
+            />
+          </mesh>
+
           <OrbitPath
             tle1={selectedSatellite.tle1}
             tle2={selectedSatellite.tle2}

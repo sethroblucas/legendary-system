@@ -2,15 +2,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSatelliteStore } from '../store/useSatelliteStore';
 
 const typeLabels: Record<string, string> = {
-  satellite: 'ACTIVE SATELLITE',
-  debris: 'SPACE DEBRIS',
-  station: 'SPACE STATION',
+  satellite: 'TRACKED ASSET',
+  debris: 'UNREGISTERED FRAGMENT',
+  station: 'ORBITAL STATION',
 };
 
+// Further desaturated for AETHON — quieter palette
 const typeColors: Record<string, string> = {
-  satellite: '#00F0FF',
-  debris: '#FF6B3B',
-  station: '#FFFFFF',
+  satellite: '#7ab3be',
+  debris: '#b0766a',
+  station: '#c4bfb2',
 };
 
 function DataRow({ label, value }: { label: string; value: string }) {
@@ -30,14 +31,15 @@ export default function DataCard() {
       {selected && (
         <motion.div
           className="data-card"
-          initial={{ opacity: 0, y: 20, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 20, scale: 0.96 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          style={{ borderColor: typeColors[selected.type] + '33' }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          style={{ borderColor: typeColors[selected.type] + '18' }}
         >
-          {/* Header */}
+          {/* Classification Header */}
           <div className="data-card-header">
+            <div className="data-card-section-label">OBJECT CLASSIFICATION</div>
             <div
               className="data-card-type"
               style={{ color: typeColors[selected.type] }}
@@ -46,7 +48,7 @@ export default function DataCard() {
                 className="type-dot"
                 style={{ backgroundColor: typeColors[selected.type] }}
               />
-              {typeLabels[selected.type] || 'UNKNOWN'}
+              {typeLabels[selected.type] || 'UNCLASSIFIED'}
             </div>
             <div className="data-card-name">{selected.name}</div>
           </div>
@@ -55,14 +57,14 @@ export default function DataCard() {
           <div
             className="data-card-divider"
             style={{
-              background: `linear-gradient(90deg, ${typeColors[selected.type]}33, transparent)`,
+              background: `linear-gradient(90deg, ${typeColors[selected.type]}14, transparent)`,
             }}
           />
 
           {/* Data */}
           <div className="data-card-body">
             <DataRow label="NORAD ID" value={String(selected.noradId)} />
-            <DataRow label="INTL DES" value={selected.intlDesignator || '—'} />
+            <DataRow label="DESIGNATOR" value={selected.intlDesignator || '—'} />
             {selected.alt !== undefined && (
               <DataRow label="ALTITUDE" value={`${selected.alt.toFixed(1)} km`} />
             )}
@@ -88,7 +90,7 @@ export default function DataCard() {
 
           {/* Footer */}
           <div className="data-card-footer">
-            <span className="data-card-footer-text">LIVE TRACKING</span>
+            <span className="data-card-footer-text">ACTIVE SURVEILLANCE</span>
             <span className="data-card-footer-dot" />
           </div>
         </motion.div>

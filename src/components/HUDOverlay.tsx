@@ -23,29 +23,26 @@ export default function HUDOverlay() {
 
   return (
     <>
-      {/* Top Left - Title & Stats */}
+      {/* Top Left — Identity & Classification Counts */}
       <div className="hud-top-left">
-        <div className="hud-title">
-          <span className="hud-title-orb">ORB</span>
-          <span className="hud-title-ital">ital</span>
-        </div>
-        <div className="hud-subtitle">REAL-TIME ORBITAL TRACKING SYSTEM</div>
+        <div className="hud-title">AETHON</div>
+        <div className="hud-subtitle">PLANETARY INTELLIGENCE CONSTRUCT</div>
         <div className="hud-stats">
           {isLoading ? (
             <div className="hud-stat">
               <span className="hud-stat-label">STATUS</span>
-              <span className="hud-stat-value loading">ACQUIRING DATA...</span>
+              <span className="hud-stat-value loading">ACQUIRING SIGNAL...</span>
             </div>
           ) : (
             <>
               <div className="hud-stat">
                 <span className="hud-stat-dot sat" />
-                <span className="hud-stat-label">SATELLITES</span>
+                <span className="hud-stat-label">TRACKED ASSETS</span>
                 <span className="hud-stat-value">{satelliteCount.toLocaleString()}</span>
               </div>
               <div className="hud-stat">
                 <span className="hud-stat-dot debris" />
-                <span className="hud-stat-label">DEBRIS</span>
+                <span className="hud-stat-label">UNREGISTERED</span>
                 <span className="hud-stat-value">{debrisCount.toLocaleString()}</span>
               </div>
               <div className="hud-stat">
@@ -54,7 +51,7 @@ export default function HUDOverlay() {
                 <span className="hud-stat-value">{stationCount.toLocaleString()}</span>
               </div>
               <div className="hud-stat total">
-                <span className="hud-stat-label">TOTAL TRACKED</span>
+                <span className="hud-stat-label">TOTAL CLASSIFIED</span>
                 <span className="hud-stat-value">{totalTracked.toLocaleString()}</span>
               </div>
             </>
@@ -62,7 +59,7 @@ export default function HUDOverlay() {
         </div>
       </div>
 
-      {/* Bottom Left - System Info */}
+      {/* Bottom Left — System Parameters */}
       <div className="hud-bottom-left">
         <div className="hud-sys-row">
           <span className="hud-sys-label">UTC</span>
@@ -78,11 +75,11 @@ export default function HUDOverlay() {
         </div>
       </div>
 
-      {/* Top Right - Crosshair / Status */}
+      {/* Top Right — System State */}
       <div className="hud-top-right">
         <div className="hud-status-indicator">
           <span className="hud-status-dot active" />
-          <span className="hud-status-text">SYSTEM ACTIVE</span>
+          <span className="hud-status-text">CONSTRUCT ACTIVE</span>
         </div>
       </div>
 
